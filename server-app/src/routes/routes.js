@@ -38,7 +38,7 @@ router.post('/login', async(req,res) =>{
         const token = jwt.sign({UserId:user._id},ACCESS_TOKEN,{expiresIn:'5h'})
         if(token){
              // Send the token back to the client
-            return res.status(200).json({ message: 'Login successful', token });
+            return res.status(200).json({ message: 'Login successful', token,username:user.username });
         }
     }catch(err){
         res.status(500).json({ error: 'Error in fetching user', details: err.message });
@@ -46,10 +46,11 @@ router.post('/login', async(req,res) =>{
 })
 router.post('/signup', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password,userName } = req.body;
         // Validate email and password (basic validation)
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required' });
+        console.log(email,userName)
+        if (!email || !password || !userName) {
+            return res.status(400).json({ error: 'Email and password and username are required' });
         }
         // validate user is already exist or not 
         const userExist = await User.findOne({email});
@@ -61,6 +62,7 @@ router.post('/signup', async (req, res) => {
         // Create a new user instance
         const newUser = new User({
             email,
+            username:userName,
             password:hashedPassword, 
         });
 
